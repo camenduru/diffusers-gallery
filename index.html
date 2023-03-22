@@ -208,7 +208,7 @@
                 class="text-sm md:text-lg lg:text-xl font-semibold group-hover:translate-x-0.5 transition"
               ></div>
             </div>
-            <div class="group-hover:brightness-90 h-full" :class="model.isNFSW ? 'blur-md' : ''">
+            <div class="group-hover:brightness-90 h-full" :class="model.isNFSW ? 'not-blur-md' : ''">
               <template x-if="model.images[0]">
                 <img
                   :src="()=> ASSETS_URL + model.images[0]"
