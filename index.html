@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Diffusers gallery</title>
+    <meta name="description" content="Discover all difussion models on the Hugging Face hub." />
+
+    <meta property="og:url" content="https://huggingface-projects-diffusers-gallery.hf.space/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Hugging Face - Diffusers Models Gallery" />
+    <meta property="og:description" content="Discover all difussion models on the Hugging Face hub." />
+    <meta property="og:image" content="https://huggingface-projects-diffusers-gallery.hf.space/Fo6vR6JX0AEjbw1.jpeg" />
+
+    <meta name="twitter:card" content="player" />
+    <meta property="twitter:url" content="https://huggingface-projects-diffusers-gallery.hf.space/" />
+    <meta name="twitter:description" content="Discover all difussion models on the Hugging Face hub." />
+
+    <meta name="twitter:site" content="@huggingface" />
+    <meta name="twitter:title" content="Hugging Face - Diffusers Models Gallery" />
+
+    <meta name="twitter:image" content="https://huggingface-projects-diffusers-gallery.hf.space/Fo6vR6JX0AEjbw1.jpeg" />
+    <meta name="twitter:player" content="https://huggingface-projects-diffusers-gallery.hf.space/index.html" />
+    <meta name="twitter:player:width" content="100%" />
+    <meta name="twitter:player:height" content="600" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.1/iframeResizer.contentWindow.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script type="module">
+      import Alpine from "https://cdn.skypack.dev/alpinejs";
+      import Intersect from "https://cdn.skypack.dev/@alpinejs/intersect";
+      Alpine.plugin(Intersect);
+
+      Alpine.data("modelsData", () => ({
+        async init() {
+          const data = await this.getModels(this.page, this.sort, this.filter);
+          this.models = data.models;
+          this.totalPages = data.totalPages;
+        },
+        ASSETS_URL: "https://d26smi9133w0oo.cloudfront.net/diffusers-gallery/",
+        models: [],
+        filter: "all",
+        sort: "trending",
+        page: 1,
+        totalPages: -1,
+        buttonClass(attr, filter) {
+          if (this[attr] === filter) {
+            return "bg-black dark:bg-white shadow-lg text-white dark:text-black hover:bg-black hover:text-white";
+          }
+          return "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500 hover:text-gray-800";
+        },
+        async filterModels(style) {
+          this.filter = style;
+          this.page = 1;
+          const data = await this.getModels(this.page, this.sort, this.filter);
+          this.models = data.models;
+          this.totalPages = data.totalPages;
+        },
+        async sortModels(sort) {
+          this.sort = sort;
+          this.page = 1;
+          const data = await this.getModels(this.page, this.sort, this.filter);
+          this.models = data.models;
+          this.totalPages = data.totalPages;
+        },
+        async getModels(page, sort, style) {
+          // const res = await fetch(`http://localhost:8000/api/models?page=${page}&sort=${sort}&style=${style}`)
+          const res = await fetch(
+            `https://huggingface-projects-diffusers-gallery-bot.hf.space/api/models?page=${page}&sort=${sort}&style=${style}`
+          );
+          const data = await res.json();
+          const models = data.models.map((model) => ({
+            id: model.id,
+            likes: model.likes,
+            class: model.class,
+            isNFSW: model.isNFSW,
+            images: model.images.filter((image) => image && image.endsWith(".jpg")),
+          }));
+
+          return {
+            models,
+            totalPages: data.totalPages,
+          };
+        },
+        async nextPage() {
+          if (this.page < this.totalPages) {
+            this.page += 1;
+            const data = await this.getModels(this.page, this.sort, this.filter);
+            this.models = this.models.concat(data.models);
+            this.totalPages = data.totalPages;
+          }
+        },
+      }));
+      Alpine.start();
+    </script>
+  </head>
+
+  <body class="pb-10 pt-5 bg-gray-100 dark:bg-gray-900 relative">
+    <section
+      class="container px-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mx-auto relative"
+      x-data="modelsData"
+    >
+      <div class="col-span-2 lg:col-span-1 flex flex-col gap-2 row-start">
+        <h1 class="text-lg font-semibold dark:text-white whitespace-nowrap">Diffusers Models Gallery</h1>
+      </div>
+
+      <div class="col-span-2 md:col-span-3 flex items-center gap-4 flex flex-wrap lg-auto lg:ml-auto text-sm">
+        <div class="flex gap-2">
+          <span class="md:px-3 py-1 dark:text-white text-gray-400">sort by</span>
+          <button
+            :class="buttonClass('sort', 'trending')"
+            class="px-2 md:px-3 py-1 rounded-full text"
+            @click="sortModels('trending')"
+          >
+            Trending
+          </button>
+          <button
+            :class="buttonClass('sort', 'recent')"
+            class="text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 hover:text-gray-800 px-2 md:px-3 py-1 rounded-full"
+            @click="sortModels('recent')"
+          >
+            Recent
+          </button>
+          <button
+            :class="buttonClass('sort', 'likes')"
+            class="text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 hover:text-gray-800 px-2 md:px-3 py-1 rounded-full"
+            @click="sortModels('likes')"
+          >
+            Most Likes
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <span class="md:px-3 py-1 dark:text-white text-gray-400"> style</span>
+          <button
+            :class="buttonClass('filter', 'all')"
+            class="px-2 md:px-3 py-1 rounded-full"
+            @click="filterModels('all')"
+          >
+            All
+          </button>
+          <button
+            :class="buttonClass('filter', 'anime')"
+            class="text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 hover:text-gray-800 px-2 md:px-3 py-1 rounded-full"
+            @click="filterModels('anime')"
+          >
+            Anime
+          </button>
+          <button
+            :class="buttonClass('filter', '3d')"
+            class="text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 hover:text-gray-800 px-2 md:px-3 py-1 rounded-full"
+            @click="filterModels('3d')"
+          >
+            3D
+          </button>
+          <button
+            :class="buttonClass('filter', 'realistic')"
+            class="text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 hover:text-gray-800 px-2 md:px-3 py-1 rounded-full"
+            @click="filterModels('realistic')"
+          >
+            Realistic
+          </button>
+        </div>
+      </div>
+
+      <template x-for="model in models" :key="model.id">
+        <template x-if="model.images.length > 0">
+          <a
+            :href="`https://huggingface.co/${model.id}`"
+            class="block bg-gray-900 rounded-xl overflow-hidden relative group aspect-square text-white"
+            target="_blank"
+          >
+            <div
+              class="absolute bottom-0 p-4 bg-gradient-to-t text-white pt-10 from-black/90 via-black/70 to-transparent w-full z-10"
+            >
+              <div class="text-sm flex items-center group-hover:translate-x-0.5 transition">
+                <svg
+                  class="mr-1.5 text-white/70"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                  aria-hidden="true"
+                  focusable="false"
+                  role="img"
+                  width="1em"
+                  height="1em"
+                  preserveAspectRatio="xMidYMid meet"
+                  viewBox="0 0 32 32"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M22.5,4c-2,0-3.9,0.8-5.3,2.2L16,7.4l-1.1-1.1C12,3.3,7.2,3.3,4.3,6.2c0,0-0.1,0.1-0.1,0.1c-3,3-3,7.8,0,10.8L16,29l11.8-11.9c3-3,3-7.8,0-10.8C26.4,4.8,24.5,4,22.5,4z"
+                  ></path>
+                </svg>
+                <span x-text="model.likes"></span>
+              </div>
+              <div
+                x-text="model.id"
+                class="text-sm md:text-lg lg:text-xl font-semibold group-hover:translate-x-0.5 transition"
+              ></div>
+            </div>
+            <div class="group-hover:brightness-90 h-full" :class="model.isNFSW ? 'blur-md' : ''">
+              <template x-if="model.images[0]">
+                <img
+                  :src="()=> ASSETS_URL + model.images[0]"
+                  :alt="model.id"
+                  alt=""
+                  class="w-full h-full object-cover group-hover:scale-[1.01] transition"
+                />
+              </template>
+            </div>
+          </a>
+        </template>
+      </template>
+      <div class="h-12 relative" x-intersect="nextPage" data-iframe-height></div>
+    </section>
+  </body>
+</html>
