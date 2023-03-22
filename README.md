@@ -1,4 +1,9 @@
-NSFW Added
+🐣 Please follow me for new updates https://twitter.com/camenduru <br />
+🔥 Please join our discord server https://discord.gg/k5BwmmvJJU
+
+## 🚦 WIP 🚦
+
+NSFW Tab Added
 
 ## Preview
 https://diffusers.vercel.app/
