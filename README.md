@@ -10,3 +10,4 @@ https://diffusers.vercel.app
 
 ## Main Repo 
 https://huggingface.co/spaces/huggingface-projects/diffusers-gallery/tree/main
+https://huggingface.co/spaces/huggingface-projects/diffusers-gallery-bot/tree/main
