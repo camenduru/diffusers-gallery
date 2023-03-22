@@ -1,3 +1,5 @@
+<!-- from https://huggingface.co/spaces/huggingface-projects/diffusers-gallery/tree/main -->
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -160,6 +162,13 @@
             @click="filterModels('realistic')"
           >
             Realistic
+          </button>
+          <button
+            :class="buttonClass('filter', 'nsfw')"
+            class="text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 hover:text-gray-800 px-2 md:px-3 py-1 rounded-full"
+            @click="filterModels('nsfw')"
+          >
+            nsfw
           </button>
         </div>
       </div>
